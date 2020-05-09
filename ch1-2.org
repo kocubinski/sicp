@@ -1,0 +1,89 @@
+#+TITLE: 1.2 Procedures and the Processes They Generate
+
+Considering computing a factorial:
+
+#+BEGIN_SRC scheme
+(define (factorial n)
+  (if (= n 1)
+      1
+      (* n (factorial (- n 1)))))
+#+END_SRC
+
+vs.
+
+#+BEGIN_SRC scheme
+(define (factorial n)
+  (fact-iter 1 1 n))
+
+(define (fact-iter product counter max-count)
+  (if (> counter max-count)
+      product
+      (fact-iter (* counter product)
+                 (+ counter 1)
+                 max-count)))
+#+END_SRC
+
+The first is said to be a /linear recursive process/, since the interpreter must keep
+track of an ever increased number /deferred operations/ in a chain.  Upon reaching the
+bottom, the first if branch, operations are performed bubbling back up.
+
+The second is said to be a /linear iterative process/. At any given time, the state of
+the process can be summarized by a fixed number of /state variables/.  This is said to
+be a /recursive procedure/ (or function) but *not* a /recursive process/!  
+
+[Does a recursive process have an ever increasing call stack?]
+
+Yes, Scheme and most Lisps offer tail-recursion whereby a recursive function is not
+implemented as recursive process, which is expensive (memory, stack overflow).  C does
+not offer tail-recursion and therefore looping constructs are required.
+
+** Tree Recursion
+Classic Fibonacci sequence.
+
+#+BEGIN_SRC scheme
+(define (fib n)
+  (cond ((= n 0) 0)
+        ((= n 1) 1)
+        (else (+ (fib (- n 1))
+                 (fib (- n 2))))))
+#+END_SRC
+
+Produces a tree-shaped process. It is time inefficient because each there are many
+identical sub trees, and as many leaves as the integer return value of the
+calculation.  It is space efficient because at any point the process the size of the
+stack is only as big as the number of nodes above the current one.
+
+Iteratively calculated Fibonacci sequence:
+
+#+BEGIN_SRC scheme
+(define (fib n)
+  (fib-iter 1 0 n))
+
+(define (fib-iter a b count)
+  (if (= count 0)
+      b
+      (fib-iter (+ a b) a (- count 1))))
+#+END_SRC
+
+Counting change:
+
+#+BEGIN_SRC scheme
+(define (count-change amount)
+  (cc amount 5))
+
+(define (cc amount kinds-of-coins)
+  (cond ((= amount 0) 1)
+        ((or (< amount 0) (= kinds-of-coins 0)) 0)
+        (else (+ (cc amount
+                     (- kinds-of-coins 1))
+                 (cc (- amount
+                        (first-denomination kinds-of-coins))
+                     kinds-of-coins)))))
+
+(define (first-denomination kinds-of-coins)
+  (cond ((= kinds-of-coins 1) 1)
+        ((= kinds-of-coins 2) 5)
+        ((= kinds-of-coins 3) 10)
+        ((= kinds-of-coins 4) 25)
+        ((= kinds-of-coins 5) 50)))
+#+END_SRC

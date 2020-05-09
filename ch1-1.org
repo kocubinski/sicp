@@ -1,0 +1,79 @@
+#+TITLE: SICP Chapter 1.1 - Building Abstractions with Procedures
+
+** Preamble
+Processes as magic.
+
+Origins:
+Recursive Functions of Symbolic Expressions and Their Computation by Machine 
+(McCarthy 1960) 
+
+~atom~ and ~lists~ were novel in 1960, differentiating LISP from other languages of
+the time.  (How is the ~atom~ of LISP different from Clojure?)
+
+Scheme is used in SICP.
+Only FORTRAN is older than LISP.
+
+** 1.1 The Elements of Programming
+Primitives, combination, and abstraction. Look back to the John Locke quote at the
+beginning of the book.  Code is thought stuff.
+
+Memory and environment are synonymous.
+
+s-exps as recursive combinations. 
+
+#+BEGIN_SRC scheme
+(* (+ 2 (* 4 6))
+   (+ 3 5 7))
+#+END_SRC
+
+can be represented as a tree, with a terminal as either an operator or a primitive.
+"percolate values upward".
+
+~(define x 3)~ is *not* a combination. instead, this is said to be a /special form/ 
+(relationship to macros?)
+
+Identifies what I call functions as /compound procedures/ e.g.
+#+BEGIN_SRC scheme
+(define (square x) (* x x))
+#+END_SRC
+square is called a compound procedure.
+
+The *substitution model* for procedure application identifies the mechanism whereby
+procedures are applied to the arguments passed in, bound in /local environment/.  The
+values are substituted for the parameters in the procedure definition.
+(suspect this is a setup for closures).
+
+This model will be abanndoned later as more complex procedure are built.
+
+
+**** Applicative order vs normal order
+Applicative order seems to describe eager evaluation of expressions, where
+normal-order evaluation describes a strategy of "fully expand and then reduce".  In
+this case:
+
+#+BEGIN_SRC scheme
+(square (+ 5 1))
+#+END_SRC
+would eval ~(+ 5 1)~ /twice/ while reducing the full expansion. The scheme (and most?)
+interpreters use applicative order, in contrast to this.
+
+For "legitimate" expressions, normal-order and applicative-order evaluate to the same
+thing.  Normal-order is much more complication when procedures can no longer be
+modeled by substitution.
+
+**** Conditionals and predicates
+Introduces ~cond~ (is this too a /special form/?)
+
+**** Examples
+Mathematical functions are contrasted to procedures in that procedures must be
+/effective/, or possess how-to knowledge. declarative vs imperative. Mathematics is
+largely concerned what what-is (declarative) and comp sci with how-to (imperative).
+
+**** 1.7 Newton's square rooting
+
+**** Internal Definitions and block structure
+the names of vars in local scope are said to be /bound/, while all other names are
+said to be /free/.  a free name/var is /captured/ in local scope by (for instance)
+using its name as formal parameter, /binding/ it.
+
+Block structure as a synonym for lexical scoping.
