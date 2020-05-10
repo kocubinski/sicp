@@ -47,7 +47,7 @@
 
 (define (f11-iter a b c n)
   (println a b c n)
-  ;; degenerate cases
+  ;; degenerate case
   (if (= 0 n)
       c
       (f11-iter (+ a (* 2 b) (* 3 c))
@@ -57,3 +57,39 @@
 
 (define (f11 n)
   (f11-iter 2 1 0 n))
+
+;; Exercise 1.12
+;;
+;; (0) 1
+;; (1) 1 1
+;; (2) 1 2 1
+;; (3) 1 3 3 1
+;; (4) 1 4 6 4 1
+;;
+
+(define (pascal r c)
+  (cond
+   ((= c 0) 1)
+   ((= c r) 1)
+   (else
+    (+ (pascal (dec r) c)
+       (pascal (dec r) (dec c))))))
+
+;; Exercise 1.13
+
+(define (fib n)
+  (cond ((= n 0) 0)
+        ((= n 1) 1)
+        (else (+ (fib (- n 1))
+                 (fib (- n 2))))))
+
+(define phi (/ (+ 1 (sqrt 5))
+	       2))
+
+(define (fib-approx n)
+  (round (/ (expt phi n)
+	    (sqrt 5))))
+
+(define (fib-test n)
+  (= (fib n)
+     (fib-approx n)))

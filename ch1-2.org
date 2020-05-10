@@ -87,3 +87,4 @@ Counting change:
         ((= kinds-of-coins 4) 25)
         ((= kinds-of-coins 5) 50)))
 #+END_SRC
+
