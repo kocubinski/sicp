@@ -144,3 +144,5 @@ b) space is time are equivalent, and can be expressed as
 (ceiling (- (logb (/ 1 (* 10 a)) 3)))
 #+END_SRC
 Or simply O(log n)
+
+** Exponentiation

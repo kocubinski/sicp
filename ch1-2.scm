@@ -133,3 +133,42 @@
 (define logB 
   (lambda (x B) 
     (/ (log x) (log B))))
+
+;; Exercise 1.16
+
+(define (even? n)
+  (= (remainder n 2) 0))
+
+(define (fast-expt b n)
+  (println b n)
+  (cond ((= n 0) 1)
+        ((even? n) (square (fast-expt b (/ n 2))))
+        (else (* b (fast-expt b (- n 1))))))
+
+;; 1 ]=> (fast-expt 2 9)
+;; (2 9) = 2*256 = 512  [2^9]
+;; (2 8) = 16^2  = 256  [2^8]
+;; (2 4) = 4^2   = 16   [2^4]
+;; (2 2) = 2^2   = 4    [2^2]
+;; (2 1) = 2*1   = 2    [2^1]
+;; (2 0)         = 1    [2^0]
+;; ;Value: 512
+;; 
+;;
+;; 1 ]=> (fast-expt 2 11)
+;; (2 11) = 2048 = 1024*2
+;; (2 10) = 1024 = 32^2 
+;; (2 5)  = 32   = 16*2
+;; (2 4)  = 16   = 4^2
+;; (2 2)  = 4    = 2^2
+;; (2 1)  = 2    = 1^2
+;; (2 0)  = 1
+;Value: 2048
+
+(define (f16 b n)
+  (define (f16-iter b n a)
+    (println b n a (* a (expt b n)))
+    (cond ((= n 0) a)
+	  ((even? n) (f16-iter (square b) (/ n 2) a))
+	  (else (f16-iter b (- n 1) (* b a)))))
+  (f16-iter b n 1))
