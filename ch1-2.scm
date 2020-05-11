@@ -197,3 +197,6 @@
   (cond ((= b 0) 0)
 	((even? b) (double (f17 a (halve b))))
 	(else (+ a (f17 a (- b 1))))))
+
+(define (f18 a b)
+  (define (f18-iter (a b n))))
