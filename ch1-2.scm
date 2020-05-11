@@ -172,3 +172,28 @@
 	  ((even? n) (f16-iter (square b) (/ n 2) a))
 	  (else (f16-iter b (- n 1) (* b a)))))
   (f16-iter b n 1))
+
+;; 1 ]=> (f16 2 11)
+;; (2 11 1 2048)
+;; (2 10 2 2048)
+;; (4 5 2 2048)
+;; (4 4 8 2048)
+;; (16 2 8 2048)
+;; (256 1 8 2048)
+;; (256 0 2048 2048)
+;Value: 2048
+
+;; Exercise 1.17
+(define (mult a b)
+  (if (= b 0)
+      0
+      (+ a (mult a (- b 1)))))
+
+(define (double n) (+ n n))
+(define (halve n) (/ n 2))
+
+(define (f17 a b)
+  (println a b)
+  (cond ((= b 0) 0)
+	((even? b) (double (f17 a (halve b))))
+	(else (+ a (f17 a (- b 1))))))
