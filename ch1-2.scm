@@ -202,8 +202,26 @@
 
 (define (f18 a b)
   (define (f18-iter a b n)
-    (println a b n)
+    (println a b n (* n a b))
     (cond ((= b 0) n)
 	  ((even? b) (f18-iter (double a) (halve b) n))
 	  (else (f18-iter a (- b 1) (+ a n)))))
   (f18-iter a b 0))
+
+;; Exercise 1.18
+
+(define (fib n)
+  (define (fib-iter a b p q count)
+    (cond ((= count 0) b)
+	  ((even? count)
+	   (fib-iter a
+		     b
+		     <??>      ; compute p'
+		     <??>      ; compute q'
+		     (/ count 2)))
+	  (else (fib-iter (+ (* b q) (* a q) (* a p))
+			  (+ (* b p) (* a q))
+			  p
+			  q
+			  (- count 1)))))
+  (fib-iter 1 0 0 1 n))
