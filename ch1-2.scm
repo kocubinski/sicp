@@ -198,5 +198,12 @@
 	((even? b) (double (f17 a (halve b))))
 	(else (+ a (f17 a (- b 1))))))
 
+;; Exercise 1.18
+
 (define (f18 a b)
-  (define (f18-iter (a b n))))
+  (define (f18-iter a b n)
+    (println a b n)
+    (cond ((= b 0) n)
+	  ((even? b) (f18-iter (double a) (halve b) n))
+	  (else (f18-iter a (- b 1) (+ a n)))))
+  (f18-iter a b 0))
