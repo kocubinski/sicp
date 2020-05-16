@@ -94,6 +94,13 @@
   (= (fib n)
      (fib-approx n)))
 
+(define (fib-fast n)
+  (define (fib-iter a b count)
+    (if (= count 0)
+	b
+	(fib-iter (+ a b) a (- count 1))))
+  (fib-iter 1 0 n))
+
 ;; Exercise 1.14
 
 (define (count-change amount)
@@ -208,7 +215,7 @@
 	  (else (f18-iter a (- b 1) (+ a n)))))
   (f18-iter a b 0))
 
-;; Exercise 1.18
+;; Exercise 1.19
 
 ;; a <- (+ (* b q) (* a q) (* a p))
 ;; b <- (+ (* b p) (* a q))
