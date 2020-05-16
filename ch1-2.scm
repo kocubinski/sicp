@@ -46,7 +46,7 @@
 ;; c <- b
 
 (define (f11-iter a b c n)
-  (println a b c n)
+  ;; (println a b c n)
   ;; degenerate case
   (if (= 0 n)
       c
@@ -210,18 +210,81 @@
 
 ;; Exercise 1.18
 
-(define (fib n)
+;; a <- (+ (* b q) (* a q) (* a p))
+;; b <- (+ (* b p) (* a q))
+
+(define (f18-Tpq a b p q)
+  (println a b p q)
+  (list (+ (* b q) (* a q) (* a p))
+	(+ (* b p) (* a q))))
+
+(define (f18-Tpq-prime a b p q)
+  (let ((a-prime (first (f18-Tpq a b p q)))
+	(b-prime (second (f18-Tpq a b p q))))
+    (f18-Tpq a-prime b-prime p q)))
+
+(define (f18-a-prime a b p q)
+  (+ (* a (square p))
+     (* 2 a p q)
+     (* 2 a (square q))
+     (* 2 b p q)
+     (* b (square q))))
+
+(define (f18-b-prime a b p q)
+  (+ (* 2 a p q)
+     (* a (square q))
+     (* b (square p))
+     (* b (square q))))
+
+(define (f18-Tpq-prime-exp a b p q)
+  (list (f18-a-prime a b p q) (f18-b-prime a b p q)))
+
+(define (f18-Tpq-prime-i a b p q)
+  (let ((ap (f18-a-prime a b p q))
+	(bp (f18-b-prime a b p q)))
+    (let ((qq (/ (- (* ap b) (* a bp))
+		 (+ (square b) (* a b) (- (square a))))))
+      (f18-Tpq a b
+	       (/ (- bp (* a qq))
+		  b)
+	       qq
+	       ))))
+
+(f18-Tpq 2 3 4 5) ;; => (33 22)
+(f18-Tpq 33 22 4 5) ;; => (407 253)
+
+(f18-Tpq-prime 2 3 4 5)
+(f18-Tpq-prime-exp 2 3 4 5)
+(f18-Tpq-prime-i 2 3 4 5)
+
+(f18-Tpq 20 19 9 11) ;; => (609 391)
+(f18-Tpq 609 391 9 11) ;; => (16481 10218)
+
+(f18-Tpq-prime 20 19 9 11)
+(f18-Tpq-prime-exp 20 19 9 11)
+(f18-Tpq-prime-i 20 19 9 11)
+
+;;(/ (- (f18-b-prime (* (/ b a)
+;;		      (- (f18-a-prime a b p q)
+;;			 (f18-b-prime a b p q)))))
+;;   a)
+
+(define (fib-f18 n)
   (define (fib-iter a b p q count)
-    (cond ((= count 0) b)
-	  ((even? count)
-	   (fib-iter a
-		     b
-		     <??>      ; compute p'
-		     <??>      ; compute q'
-		     (/ count 2)))
-	  (else (fib-iter (+ (* b q) (* a q) (* a p))
-			  (+ (* b p) (* a q))
-			  p
-			  q
-			  (- count 1)))))
+    (let ((ap (f18-a-prime a b p q))
+	  (bp (f18-b-prime a b p q)))
+      (cond ((= count 0) b)
+	    ((even? count)
+	     (fib-iter a
+		       b
+		       (/ (- bp (* a q))
+			  b)
+		       (/ (- (* ap b) (* a bp))
+			  (+ (square b) (* a b) (- (square a))))
+		       (/ count 2)))
+	    (else (fib-iter (+ (* b q) (* a q) (* a p))
+			    (+ (* b p) (* a q))
+			    p
+			    q
+			    (- count 1))))))
   (fib-iter 1 0 0 1 n))
