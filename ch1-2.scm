@@ -214,7 +214,6 @@
 ;; b <- (+ (* b p) (* a q))
 
 (define (f18-Tpq a b p q)
-  (println a b p q)
   (list (+ (* b q) (* a q) (* a p))
 	(+ (* b p) (* a q))))
 
@@ -245,9 +244,22 @@
     (let ((qq (/ (- (* ap b) (* a bp))
 		 (+ (square b) (* a b) (- (square a))))))
       (f18-Tpq a b
-	       (/ (- bp (* a qq))
-		  b)
+	       (if (= b 0)
+		   1
+		   (/ (- bp (* a qq))
+		      b))
 	       qq
+	       ))))
+
+(define (f18-Tpq-prime-p a b p q)
+  (let ((ap (f18-a-prime a b p q))
+	(bp (f18-b-prime a b p q)))
+    (let ((pp (/ (- (* 2 ap) (* b bp) (* 2 bp))
+		 (- (* 2 a) (square b) (* 2 b)))))
+      (f18-Tpq a b
+	       pp
+	       (/ (- bp (* b pp))
+		  a)
 	       ))))
 
 (f18-Tpq 2 3 4 5) ;; => (33 22)
@@ -256,6 +268,11 @@
 (f18-Tpq-prime 2 3 4 5)
 (f18-Tpq-prime-exp 2 3 4 5)
 (f18-Tpq-prime-i 2 3 4 5)
+(f18-Tpq-prime-p 2 3 4 5)
+
+(f18-Tpq-prime 1 0 0 1)
+(f18-Tpq-prime-exp 1 0 0 1)
+(f18-Tpq-prime-i 1 0 0 1)
 
 (f18-Tpq 20 19 9 11) ;; => (609 391)
 (f18-Tpq 609 391 9 11) ;; => (16481 10218)
@@ -263,6 +280,7 @@
 (f18-Tpq-prime 20 19 9 11)
 (f18-Tpq-prime-exp 20 19 9 11)
 (f18-Tpq-prime-i 20 19 9 11)
+(f18-Tpq-prime-p 20 19 9 11)
 
 ;;(/ (- (f18-b-prime (* (/ b a)
 ;;		      (- (f18-a-prime a b p q)
@@ -273,14 +291,18 @@
   (define (fib-iter a b p q count)
     (let ((ap (f18-a-prime a b p q))
 	  (bp (f18-b-prime a b p q)))
+      (define (qq)
+	(/ (- (* ap b) (* a bp))
+	   (+ (square b) (* a b) (- (square a)))))
       (cond ((= count 0) b)
 	    ((even? count)
 	     (fib-iter a
 		       b
-		       (/ (- bp (* a q))
-			  b)
-		       (/ (- (* ap b) (* a bp))
-			  (+ (square b) (* a b) (- (square a))))
+		       (if (= b 0)
+			   1
+			   (/ (- bp (* a (qq)))
+			      b))
+		       (qq)
 		       (/ count 2)))
 	    (else (fib-iter (+ (* b q) (* a q) (* a p))
 			    (+ (* b p) (* a q))
