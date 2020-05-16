@@ -248,19 +248,17 @@
 		   1
 		   (/ (- bp (* a qq))
 		      b))
-	       qq
-	       ))))
+	       qq))))
 
 (define (f18-Tpq-prime-p a b p q)
   (let ((ap (f18-a-prime a b p q))
 	(bp (f18-b-prime a b p q)))
-    (let ((pp (/ (- (* 2 ap) (* b bp) (* 2 bp))
-		 (- (* 2 a) (square b) (* 2 b)))))
+    (let ((pp (/ (- (* ap a) (* bp b) (* a bp))
+		 (- (square a) (* a b) (square b)))))
       (f18-Tpq a b
 	       pp
 	       (/ (- bp (* b pp))
-		  a)
-	       ))))
+		  a)))))
 
 (f18-Tpq 2 3 4 5) ;; => (33 22)
 (f18-Tpq 33 22 4 5) ;; => (407 253)
@@ -283,11 +281,7 @@
 (f18-Tpq-prime-i 20 19 9 11)
 (f18-Tpq-prime-p 20 19 9 11)
 
-;;(/ (- (f18-b-prime (* (/ b a)
-;;		      (- (f18-a-prime a b p q)
-;;			 (f18-b-prime a b p q)))))
-;;   a)
-
+;; works, but suffers from divide by zero for odd n
 (define (f18-fib-q n)
   (define (fib-iter a b p q count)
     (println a b p q count)
@@ -299,10 +293,8 @@
 	      ((even? count)
 	       (fib-iter a
 			 b
-			 (if (= b 0)
-			     1
-			     (/ (- bp (* a qq))
-				b))
+			 (/ (- bp (* a qq))
+			    b)
 			 qq		 
 			 (/ count 2)))
 	      (else (fib-iter (+ (* b q) (* a q) (* a p))
@@ -317,8 +309,8 @@
   (define (fib-iter a b p q count)
     (let ((ap (f18-a-prime a b p q))
 	  (bp (f18-b-prime a b p q)))
-      (let ((pp (/ (- (* 2 ap) (* b bp) (* 2 bp))
-		   (- (* 2 a) (square b) (* 2 b)))))
+      (let ((pp (/ (- (* ap a) (* bp b) (* a bp))
+		   (- (square a) (* a b) (square b)))))
 	(cond ((= count 0) b)
 	      ((even? count)
 	       (fib-iter a
