@@ -332,3 +332,97 @@
 			      q
 			      (- count 1)))))))
   (fib-iter 1 0 0 1 n))
+
+;; Exercise 1.20
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+
+'((gcd 206 40)
+
+  (gcd 40 (remainder 206 40))
+
+  (gcd (remainder 206 40)
+       (remainder 40 (remainder 206 40)))
+
+  (gcd (remainder 40 (remainder 206 40))
+       (remainder (remainder 206 40)
+		  (remainder 40 (remainder 206 40))))
+
+  (gcd (remainder (remainder 206 40)
+		  (remainder 40 (remainder 206 40)))
+       (remainder (remainder 40 (remainder 206 40))
+		  (remainder (remainder 206 40)
+			     (remainder 40 (remainder 206 40)))))
+
+  (if (= 0 (remainder (remainder 40 (remainder 206 40))
+		      (remainder (remainder 206 40)
+				 (remainder 40 (remainder 206 40))))
+	 (remainder (remainder 206 40)
+		    (remainder 40 (remainder 206 40)))))
+  )
+
+;; normal-order results in 13
+;; applicative-order results in 3
+
+;; Primes
+
+(define (fermat-demo)
+  (define (t a n)
+    (modulo (expt a n) n))
+  (let ((prime 43)
+	(not-prime 40))
+    (list 
+     (map (lambda (a) (list a (= a (t a prime))))
+	  (iota (- prime 1) 1))
+     (map (lambda (a) (list a (= a (t a not-prime))))
+	  (iota (- not-prime 1) 1)))))
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder (square (expmod base (/ exp 2) m))
+                    m))
+        (else
+         (remainder (* base (expmod base (- exp 1) m))
+                    m))))
+
+(define (fermat-test n)
+  (define (try-it a)
+    (= (expmod a n n) a))
+  (try-it (+ 1 (random (- n 1)))))
+
+;; Exercise 1.21
+
+(define (smallest-divisor n)
+  (define (divides? a b)
+    (= (remainder b a) 0))
+  (define (find-divisor n test-divisor)
+    (cond ((> (square test-divisor) n) n)
+	  ((divides? test-divisor n) test-divisor)
+	  (else (find-divisor n (+ test-divisor 1)))))
+  (find-divisor n 2))
+
+(smallest-divisor 199) ; => 199
+(smallest-divisor 1999) ; => 1999
+(smallest-divisor 19999) ; => 7
+
+;; Exercise 1.22
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+(define (start-prime-test n start-time)
+  (if (prime? n)
+      (report-prime (- (runtime) start-time))))
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+
+(define (search-for-primes low high)
+  )
