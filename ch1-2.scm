@@ -432,3 +432,86 @@
 	(let ((p (timed-prime-test n)))
 	  (iter (+ n 2) (if p (+ found 1) found)))))
   (iter (if (even? low) (+ 1 low) low) 0))
+
+;; (search-for-primes 10000000000000 100000000000000)
+
+;; Exercise 1.23
+
+;; Redef above fn for this exercise
+(define (smallest-divisor n)
+  (define (divides? a b)
+    (= (remainder b a) 0))
+  (define (next n)
+    (if (= n 2)
+	3
+	(+ n 2)))
+  (define (find-divisor n test-divisor)
+    (cond ((> (square test-divisor) n) n)
+	  ((divides? test-divisor n) test-divisor)
+	  (else (find-divisor n (next test-divisor)))))
+  (find-divisor n 2))
+
+;; 2x as fast now
+;; (search-for-primes 10000000000000 100000000000000)
+
+;; Exercise 1.24
+
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+        ((fermat-test n) (fast-prime? n (- times 1)))
+        (else false)))
+
+;; Redeffing above for exercise
+
+(define (start-prime-test n start-time)
+  (if (fast-prime? n 5)
+      (begin (report-prime (- (runtime) start-time))
+	     #t)
+      #f))
+
+;; (search-for-primes 10000000000000 100000000000000)
+
+;; Exercise 1.25
+
+(define (expmod-2 base exp m)
+  (remainder (fast-expt base exp) m))
+
+;; Technically yes, but performance is much worse.
+;;
+;; expmod has the advantage dealing with much smaller numbers, relying on
+;; for any integers x, y, and m, we can find the remainder of x times y
+;; modulo m by computing separately the remainders of x modulo m and y
+;; modulo m, multiplying these, and then taking the remainder of the
+;; result modulo m.
+;;
+;; expmod-2 computers a giant number and attempts division which is much
+;; more expensive.
+
+;; Exercise 1.26
+;; Rewriting the expression in this way makes the algorith tree-recursive
+;; for even numbers, exploding the number of steps.
+
+;; Excercise 1.27
+
+(fast-prime? 6601 9)
+;; => #t
+
+(define (thorough-fast-prime n)
+  (define (iter m)
+    (cond ((= m 1) #t)
+	  ((= m (expmod m n n))
+	   (iter (- m 1)))
+	  (else #f)))
+  (iter (- n 1)))
+
+(thorough-fast-prime 6601)
+;; passes for all m<n
+
+;; Exercise 1.28
+;; Miller-Rabin test
+
+;; e.g.
+(= (modulo (expt 3 42) 43)
+   (modulo (expt 7 42) 43)
+   (modulo (expt 18 42) 43)
+   1)
