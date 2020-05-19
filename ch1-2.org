@@ -88,7 +88,6 @@ Counting change:
         ((= kinds-of-coins 5) 50)))
 #+END_SRC
 
-
 ** Orders of Growth
 Synonym for Big O notation.
 
@@ -146,3 +145,97 @@ b) space is time are equivalent, and can be expressed as
 Or simply O(log n)
 
 ** Exponentiation
+** Greatest Common Divisors
+Interesting note which clears something up for me, particularly the difference between
+~modulo~ and ~remainder~ (from the [[https://www.gnu.org/software/mit-scheme/documentation/mit-scheme-ref/Numerical-operations.html][MIT scheme manual]])
+
+procedure: *quotient* n1 n2
+procedure: *remainder* n1 n2
+procedure: *modulo* n1 n2
+
+These procedures implement number-theoretic (integer) division: for positive integers
+n1 and n2, if n3 and n4 are integers such that then
+
+#+BEGIN_SRC 
+(quotient n1 n2)        ⇒  n3
+(remainder n1 n2)       ⇒  n4
+(modulo n1 n2)          ⇒  n4
+#+END_SRC
+
+For integers n1 and n2 with n2 not equal to 0,
+
+#+BEGIN_SRC 
+(= n1
+   (+ (* n2 (quotient n1 n2))
+      (remainder n1 n2)))
+                                    ⇒  #t
+#+END_SRC
+
+provided all numbers involved in that computation are exact.
+
+The value returned by quotient always has the sign of the product of its
+arguments. remainder and modulo differ on negative arguments — the remainder always
+has the sign of the dividend, the modulo always has the sign of the divisor:
+
+#+BEGIN_SRC 
+(modulo 13 4)           ⇒  1
+(remainder 13 4)        ⇒  1
+
+(modulo -13 4)          ⇒  3
+(remainder -13 4)       ⇒  -1
+
+(modulo 13 -4)          ⇒  -3
+(remainder 13 -4)       ⇒  1
+
+(modulo -13 -4)         ⇒  -1
+(remainder -13 -4)      ⇒  -1
+
+(remainder -13 -4.0)    ⇒  -1.0  ; inexact
+#+END_SRC
+
+Note that quotient is the same as integer-truncate.
+
+*Identity*
+#+BEGIN_EXAMPLE
+GCD(a,b) = GCD(b,r)
+#+END_EXAMPLE
+
+Euclid's Algorithm for GCD
+#+BEGIN_SRC scheme
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+#+END_SRC
+in logarithmic time.
+
+** Testing for Primality
+Relies on if n is not prime it must have a divisor less than or equal to ~(sqrt n)~
+
+#+BEGIN_SRC scheme
+(define (prime? n)
+  
+  (define (smallest-divisor n)
+    (find-divisor n 2))
+
+  (define (find-divisor n test-divisor)
+    (cond ((> (square test-divisor) n)
+	   n)
+	  ((divides? test-divisor n)
+	   test-divisor)
+	  (else
+	   (find-divisor n (+ test-divisor 1)))))
+
+  (define (divides? a b)
+    (= (remainder b a) 0))
+
+  (= n (smallest-divisor n)))
+#+END_SRC
+
+so time complexity of O(sqrt(n))
+
+**** Fermat's Little Theorem
+If /n/ is a prime number and /a/ is any positive integer less than /n/, then /a/ raised
+to the /nth/ power is congruent to /a/ modulo /n/.
+
+Most numbers ~a < n~ fail this test.

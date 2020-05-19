@@ -332,3 +332,207 @@
 			      q
 			      (- count 1)))))))
   (fib-iter 1 0 0 1 n))
+
+;; Exercise 1.20
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+
+'((gcd 206 40)
+
+  (gcd 40 (remainder 206 40))
+
+  (gcd (remainder 206 40)
+       (remainder 40 (remainder 206 40)))
+
+  (gcd (remainder 40 (remainder 206 40))
+       (remainder (remainder 206 40)
+		  (remainder 40 (remainder 206 40))))
+
+  (gcd (remainder (remainder 206 40)
+		  (remainder 40 (remainder 206 40)))
+       (remainder (remainder 40 (remainder 206 40))
+		  (remainder (remainder 206 40)
+			     (remainder 40 (remainder 206 40)))))
+
+  (if (= 0 (remainder (remainder 40 (remainder 206 40))
+		      (remainder (remainder 206 40)
+				 (remainder 40 (remainder 206 40))))
+	 (remainder (remainder 206 40)
+		    (remainder 40 (remainder 206 40)))))
+  )
+
+;; normal-order results in 13
+;; applicative-order results in 3
+
+;; Primes
+
+(define (fermat-demo)
+  (define (t a n)
+    (modulo (expt a n) n))
+  (let ((prime 43)
+	(not-prime 40))
+    (list 
+     (map (lambda (a) (list a (= a (t a prime))))
+	  (iota (- prime 1) 1))
+     (map (lambda (a) (list a (= a (t a not-prime))))
+	  (iota (- not-prime 1) 1)))))
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder (square (expmod base (/ exp 2) m))
+                    m))
+        (else
+         (remainder (* base (expmod base (- exp 1) m))
+                    m))))
+
+(define (fermat-test n)
+  (define (try-it a)
+    (= (expmod a n n) a))
+  (try-it (+ 1 (random (- n 1)))))
+
+;; Exercise 1.21
+
+(define (smallest-divisor n)
+  (define (divides? a b)
+    (= (remainder b a) 0))
+  (define (find-divisor n test-divisor)
+    (cond ((> (square test-divisor) n) n)
+	  ((divides? test-divisor n) test-divisor)
+	  (else (find-divisor n (+ test-divisor 1)))))
+  (find-divisor n 2))
+
+(smallest-divisor 199) ; => 199
+(smallest-divisor 1999) ; => 1999
+(smallest-divisor 19999) ; => 7
+
+;; Exercise 1.22
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+(define (start-prime-test n start-time)
+  (if (prime? n)
+      (begin (report-prime (- (runtime) start-time))
+	     #t)
+      #f))
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+
+(define (search-for-primes low high)
+  (define (iter n found)
+    (if (< found 3)
+	(let ((p (timed-prime-test n)))
+	  (iter (+ n 2) (if p (+ found 1) found)))))
+  (iter (if (even? low) (+ 1 low) low) 0))
+
+;; (search-for-primes 10000000000000 100000000000000)
+
+;; Exercise 1.23
+
+;; Redef above fn for this exercise
+(define (smallest-divisor n)
+  (define (divides? a b)
+    (= (remainder b a) 0))
+  (define (next n)
+    (if (= n 2)
+	3
+	(+ n 2)))
+  (define (find-divisor n test-divisor)
+    (cond ((> (square test-divisor) n) n)
+	  ((divides? test-divisor n) test-divisor)
+	  (else (find-divisor n (next test-divisor)))))
+  (find-divisor n 2))
+
+;; 2x as fast now
+;; (search-for-primes 10000000000000 100000000000000)
+
+;; Exercise 1.24
+
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+        ((fermat-test n) (fast-prime? n (- times 1)))
+        (else false)))
+
+;; Redeffing above for exercise
+
+(define (start-prime-test n start-time)
+  (if (fast-prime? n 5)
+      (begin (report-prime (- (runtime) start-time))
+	     #t)
+      #f))
+
+;; (search-for-primes 10000000000000 100000000000000)
+
+;; Exercise 1.25
+
+(define (expmod-2 base exp m)
+  (remainder (fast-expt base exp) m))
+
+;; Technically yes, but performance is much worse.
+;;
+;; expmod has the advantage dealing with much smaller numbers, relying on
+;; for any integers x, y, and m, we can find the remainder of x times y
+;; modulo m by computing separately the remainders of x modulo m and y
+;; modulo m, multiplying these, and then taking the remainder of the
+;; result modulo m.
+;;
+;; expmod-2 computers a giant number and attempts division which is much
+;; more expensive.
+
+;; Exercise 1.26
+;; Rewriting the expression in this way makes the algorith tree-recursive
+;; for even numbers, exploding the number of steps.
+
+;; Excercise 1.27
+
+(fast-prime? 6601 9)
+;; => #t
+
+(define (thorough-fast-prime n)
+  (define (iter m)
+    (cond ((= m 1) #t)
+	  ((= m (expmod m n n))
+	   (iter (- m 1)))
+	  (else #f)))
+  (iter (- n 1)))
+
+(thorough-fast-prime 6601)
+;; passes for all m<n
+
+;; Exercise 1.28
+;; Miller-Rabin test
+
+;; e.g.
+(= (modulo (expt 3 42) 43)
+   (modulo (expt 7 42) 43)
+   (modulo (expt 18 42) 43)
+   1)
+
+(define (expmod-28 base exp m)
+  (define (nontrivial? r n)
+    (and (= r 1)
+	 (not (= n 1))
+	 (not (= n (- exp 1)))))
+  (define (iter base exp m)
+    (cond ((= exp 0) 1)
+	  ((even? exp)
+	   (remainder (square (expmod base (/ exp 2) m))
+		      m))
+	  (else
+	   (let ((r (remainder (* base (expmod base (- exp 1) m))
+			       m)))
+	     (if (nontrivial? r exp) 0 r)))))
+  (iter base exp m))
+
+(expmod 7 43 43)
+(expmod 7 42 43)
+(expmod-28 7 43 43)
+(expmod-28 7 42 42)
