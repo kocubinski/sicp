@@ -2,6 +2,7 @@
 (define (even? n) (= 0 (remainder n 2)))
 (define (cube x) (* x x x))
 (define (inc n) (+ n 1))
+(define (identity x) x)
 
 (define (sum term a next b)
   (if (> a b)
@@ -28,3 +29,15 @@
 
 (simpsons-rule cube 0 1 100)
 ;; => 1/4
+
+;; Exercise 1.30
+(define (sum-iter term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (+ result
+			  (term a)))))
+  (iter a 0))
+
+(sum identity 1 inc 10)
+(sum-iter identity 1 inc 10)
