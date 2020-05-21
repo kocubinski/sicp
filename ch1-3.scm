@@ -79,3 +79,76 @@
 (= (factorial 5)
    (* 5 4 3 2 1)
    (product-iter identity 1 inc 5))
+
+;; Exercise 1.32
+
+(define (accumulate combiner null-value term a next b)
+  (if (> a b)
+      null-value
+      (combiner (term a)
+		(accumulate combiner null-value term (next a) next b))))
+
+(define (accumulate-iter combiner null-value term a next b)
+  (define (iter a result)
+    (if (> a b)
+	result
+	(iter (next a) (combiner result (term a)))))
+  (iter a null-value))
+
+(= (sum identity 1 inc 10)
+   (accumulate + 0 identity 1 inc 10)
+   (accumulate-iter + 0 identity 1 inc 10))
+
+;; Exercise 1.33
+
+(define (smallest-divisor n)
+  (define (divides? a b)
+    (= (remainder b a) 0))
+  (define (find-divisor n test-divisor)
+    (cond ((> (square test-divisor) n) n)
+	  ((divides? test-divisor n) test-divisor)
+	  (else (find-divisor n (+ test-divisor 1)))))
+  (find-divisor n 2))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(define (filtered-accumulate combiner pred null-value term a next b)
+  (if (> a b)
+      null-value
+      (combiner (if (pred a)
+		    (term a)
+		    null-value)
+		(filtered-accumulate combiner
+				     pred
+				     null-value
+				     term
+				     (next a)
+				     next
+				     b))))
+
+(= (+ 1 2 3 5 7)
+   (filtered-accumulate + prime? 0 identity 1 inc 10))
+
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+
+(define (coprime a b)
+  (= (gcd a b) 1))
+
+(coprime 14 15)
+(coprime 14 21)
+
+(define (coprime-product n)
+  (filtered-accumulate *
+		       (lambda (m) (coprime m n))
+		       1
+		       identity
+		       1
+		       inc
+		       n))
+
+(= (* 1 3 7 9)
+   (coprime-product 10))
