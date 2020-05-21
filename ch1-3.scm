@@ -2,6 +2,7 @@
 (define (even? n) (= 0 (remainder n 2)))
 (define (cube x) (* x x x))
 (define (inc n) (+ n 1))
+(define (dec n) (- n 1))
 (define (identity x) x)
 
 (define (sum term a next b)
@@ -41,3 +42,40 @@
 
 (sum identity 1 inc 10)
 (sum-iter identity 1 inc 10)
+
+;; Exercise 1.31
+;; a)
+(define (product term a next b)
+  (if (> a b)
+      1
+      (* (term a)
+	 (product term (next a) next b))))
+
+(define (factorial n)
+  (product identity 1 inc n))
+
+(= (factorial 5)
+   (* 5 4 3 2 1))
+
+;; pi / 4
+(product (lambda (n)
+	   (* (/ (dec n) n)
+	      (/ (inc n) n)))
+	 3.
+	 (lambda (n) (+ n 2))
+	 100)
+
+(/ 3.1415 4)
+
+;; b)
+(define (product-iter term a next b)
+  (define (iter a result)
+    (if (> a b)
+	result
+	(iter (next a)
+	      (* result (term a)))))
+  (iter a 1))
+
+(= (factorial 5)
+   (* 5 4 3 2 1)
+   (product-iter identity 1 inc 5))
