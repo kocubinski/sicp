@@ -4,6 +4,9 @@
 (define (inc n) (+ n 1))
 (define (dec n) (- n 1))
 (define (identity x) x)
+(define (println . args)
+  (display args)
+  (newline))
 
 (define (sum term a next b)
   (if (> a b)
@@ -152,3 +155,15 @@
 
 (= (* 1 3 7 9)
    (coprime-product 10))
+
+;; Exercise 1.34
+
+(define (f g)
+  (g 2))
+
+;; (f f)
+;; (f 2)
+;; (2 2)
+;; The intepreter tries to apply 2 to 2
+
+
