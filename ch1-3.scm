@@ -283,3 +283,16 @@
 (cont-frac (lambda (i) 1.0)
 	   ex-38-d
 	   100)
+
+;; Exercse 1.39
+(define (tan-cf x k)
+  (cont-frac (lambda (i)
+	       (if (= i 1)
+		   x
+		   (- (* x x))))
+	     (lambda (i)
+	       (- (* 2 i) 1))
+	     k))
+
+(= (tan-cf 7. 100)
+   (tan 7))
