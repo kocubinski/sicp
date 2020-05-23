@@ -219,14 +219,15 @@
 ;Value: .6180339887498948
 
 ;; part (a)
-(define (cont-frac n d k)
-  (define (f i)
-    (if (= i 1)
-	(/ (n 1)
-	   (d 1))
-	(/ (n i)
-	   (+ (d i) (f (- i 1))))))
-  (f k))
+ (define (cont-frac n d k)
+   (define (f i)
+     (if (= i k)
+	 (/ (n i)
+	    (d i))
+	 (/ (n i)
+	    (+ (d i)
+	       (f (+ i 1))))))
+   (f 1))
 
 (cont-frac (lambda (i) 1.0)
 	   (lambda (i) 1.0)
@@ -251,3 +252,34 @@
 		(lambda (i) 1.0)
 		13)
 ;Value: .6180257510729613
+
+;; Exercise 1.38
+;;D(i)
+;; 1 -> 1,
+;; 2 -> 2,
+;; 3 -> 1,
+;; 4 -> 1,
+;; 5 -> 4,
+;; 6 -> 1,
+;; 7 -> 1,
+;; 8 -> 6,
+;; 9 -> 1,
+;; 10-> 1,
+;; 11-> 8
+
+(define (ex-38-d i)
+  (let ((n (+ 1 i)))
+    (if (not (= 0 (modulo n 3)))
+	1
+	(* 2 (/ n 3)))))
+
+(define eulers-num 2.71828)
+(- eulers-num 2)
+
+(cont-frac-iter (lambda (i) 1.0)
+		ex-38-d
+		100)
+
+(cont-frac (lambda (i) 1.0)
+	   ex-38-d
+	   100)
