@@ -175,11 +175,12 @@
 			 2))
 
 (define tolerance 0.00001)
+
 (define (fixed-point f first-guess)
+  (println f)
   (define (close-enough? v1 v2)
     (< (abs (- v1 v2)) tolerance))
   (define (try guess)
-    (println guess)
     (let ((next (f guess)))
       (if (close-enough? guess next)
           next
@@ -296,3 +297,114 @@
 
 (= (tan-cf 7. 100)
    (tan 7))
+
+;; Exercise 1.40
+(define dx 0.00001)
+
+(define (deriv g)
+  (lambda (x)
+    (/ (- (g (+ x dx)) (g x))
+       dx)))
+
+(define (newton-transform g)
+  (lambda (x)
+    (- x (/ (g x) ((deriv g) x)))))
+
+(define (newtons-method g guess)
+  (fixed-point (newton-transform g) guess))
+
+(define (cubic a b c)
+  (lambda (x)
+    (+ (* x x x) (* a x x) (* b x) c)))
+
+(define cubic-40 (cubic 7 (- 10) 1))
+
+(cubic-40 (newtons-method cubic-40 2))
+(cubic-40 (newtons-method cubic-40 0))
+(cubic-40 (newtons-method cubic-40 -7))
+
+;; Exercise 1.41
+(define (double f)
+  (lambda (x) (f (f x))))
+
+((double inc) 3)
+;Value: 5
+
+(((double (double double)) inc) 5)
+;Value: 21
+
+;; Exercise 1.42
+(define (compose f g)
+  (println f g)
+  (lambda (x) (f (g x))))
+
+((compose square inc) 6)
+;Value: 49
+
+;; Exercise 1.43
+(define (repeated-2 f n)
+  (lambda (x)
+    (define (g n)
+      (if (= n 0)
+	  x
+	  (f (g (- n 1)))))
+    (g n)))
+
+(define (repeated f n)
+  (if (= n 1)
+      f
+      (compose f (repeated f (- n 1)))))
+
+(= 
+ ((repeated square 3) 5)
+ ((repeated-2 square 3) 5)
+ (square (square (square 5))))
+
+;; Exercise 1.44
+;; n-fold smoothed function
+(define (smooth f)
+  (lambda (x)
+    (/ (+ (f (- x dx))
+	  (f x)
+	  (f (+ x dx)))
+       3)))
+
+(define (n-fold-smooth f n)
+  (repeated (smooth f) n))
+
+;; Exercise 1.45
+
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+
+((average-damp square) 10)
+
+(define (sqrt x)
+  (fixed-point (average-damp (lambda (y) (/ x y)))
+               1.0))
+
+(define (cube-root x)
+  (fixed-point (average-damp (lambda (y) (/ x (square y))))
+               1.0))
+
+(cube-root 27)
+
+(define (fourth-root x)
+  (fixed-point (average-damp
+		(average-damp (lambda (y) (/ x (* y y y)))))
+               1.0))
+
+(define (fourth-root-2 x)
+  (fixed-point (compose average-damp
+			(average-damp (lambda (y) (/ x (* y y y)))))
+               1.0))
+
+(define (nth-root x n)
+  (fixed-point (repeated (average-damp
+			  (lambda (y) (/ x (expt y (- n 1)))))
+			 2)
+               1.0))
+
+(fourth-root 81)
+(fourth-root-2 81)
+(nth-root 81 4)
