@@ -177,7 +177,6 @@
 (define tolerance 0.00001)
 
 (define (fixed-point f first-guess)
-  (println f)
   (define (close-enough? v1 v2)
     (< (abs (- v1 v2)) tolerance))
   (define (try guess)
@@ -335,7 +334,6 @@
 
 ;; Exercise 1.42
 (define (compose f g)
-  (println f g)
   (lambda (x) (f (g x))))
 
 ((compose square inc) 6)
@@ -395,16 +393,46 @@
                1.0))
 
 (define (fourth-root-2 x)
-  (fixed-point (compose average-damp
-			(average-damp (lambda (y) (/ x (* y y y)))))
+  (fixed-point ((compose average-damp
+			 average-damp)
+		(lambda (y) (/ x (* y y y))))
                1.0))
 
 (define (nth-root x n)
-  (fixed-point (repeated (average-damp
-			  (lambda (y) (/ x (expt y (- n 1)))))
-			 2)
+  (fixed-point ((repeated average-damp (/ (log n) (log 2)))
+		(lambda (y) (/ x (expt y (- n 1)))))
                1.0))
 
 (fourth-root 81)
 (fourth-root-2 81)
 (nth-root 81 4)
+(nth-root 4294967296 32)
+
+;; Exercise 1.46
+
+(define (iterative-improve good-enough? improve)
+  (lambda (guess)
+    (define (try guess)
+      (let ((next (improve guess)))
+	(if (good-enough? guess next)
+	    next
+	    (try next))))
+    (try guess)))
+
+(define (pretty-close x1 x2)
+  (< (abs (- x1 x2)) 0.0001))
+
+(define (sqrt-46 x)
+  ((iterative-improve pretty-close
+		      (lambda (guess)
+			(average guess (/ x guess))))
+   x))
+
+(sqrt-46 4.)
+;Value: 2.000000000000002
+
+(define (fixed-point-46 f first-guess)
+  ((iterative-improve pretty-close f) first-guess))
+
+(fixed-point-46 (lambda (x) (+ 1 (/ 1 x))) 4.)
+;Value: 1.6180451127819548
