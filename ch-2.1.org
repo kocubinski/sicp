@@ -1,0 +1,10 @@
+#+TITLE: SICP Chapter 2.1 Notes
+
+/data abstraction/ is a much better word than object-oriented abstraction.   the
+example used here was representing a rational number as on opaque unit with numerator
+and denominator, or /compound data object/.
+
+/selectors/ and /constructor/ type procedures as the boundary for /data abstraction/.
+
+Valid representations of data abstractions are surprisingly difficult to formulate
+rigorously.  For more detail see Liskov and Ziles (1975).
