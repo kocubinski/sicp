@@ -124,18 +124,47 @@
 ;; Exercise 2.6
 ;; /Church numerals/ - from Alonzo Church
 
+;; Starting with zero not applying the function f at all
 (define zero
   (lambda (f)
     (lambda (x) x)))
 
+;; Proceed with 1 applying the function once
+
+(define one
+  (lambda (f)
+    (lambda (x)
+      (f x))))
+
+;; Applying the function twice
+(define two
+  (lambda (f)
+    (lambda (x)
+      (f (f x)))))
+
+;; Where n is an aribtrary church numeral
+;; (succesor for Church numeral)
 (define (add-1 n)
   (lambda (f)
     (lambda (x) (f ((n f) x)))))
 
-;; (add-1 zero)
-(define one
-  (lambda (f)
-    (lambda (x) (f (((lambda (g)
-		       (lambda (y) y))
-		     f) x)))))
+;; For example, given the numerical primitive successor function
+(define inc (lambda (x) (+ x 1)))
 
+((two inc) 0)
+;;Value: 2
+(((add-1 two) inc) 0)
+;;Value: 3
+
+(define three
+  (add-1 two))
+
+((three inc) 0)
+
+(define (add n m)
+  (lambda (f)
+    (lambda (x)
+      ((n f) ((m f) x)))))
+
+(((add two three) inc) 0)
+;Value: 5
