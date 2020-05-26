@@ -1,5 +1,8 @@
+;; -*- geiser-scheme-implementation: mit -*-
+
 ;; Chapter 2.1 Exercises
 
+(define (square x) (* x x))
 (define (println . args)
   (display args)
   (newline))
@@ -168,3 +171,97 @@
 
 (((add two three) inc) 0)
 ;Value: 5
+
+;; Exercise 2.7
+
+(define (add-interval x y)
+  (make-interval (+ (lower-bound x) (lower-bound y))
+                 (+ (upper-bound x) (upper-bound y))))
+
+(define (mul-interval x y)
+  (let ((p1 (* (lower-bound x) (lower-bound y)))
+        (p2 (* (lower-bound x) (upper-bound y)))
+        (p3 (* (upper-bound x) (lower-bound y)))
+        (p4 (* (upper-bound x) (upper-bound y))))
+    (make-interval (min p1 p2 p3 p4)
+                   (max p1 p2 p3 p4))))
+
+(define (div-interval x y)
+  (mul-interval x 
+                (make-interval (/ 1.0 (upper-bound y))
+                               (/ 1.0 (lower-bound y)))))
+
+(define (make-interval a b) (cons a b))
+(define (lower-bound interval) (car interval))
+(define (upper-bound interval) (cdr interval))
+
+;; Exercise 2.8
+(define one->three (make-interval 1 3))
+(add-interval one->three one->three)
+(div-interval one->three one->three)
+
+(define (sub-interval x y)
+  (make-interval (- (lower-bound x) (lower-bound y))
+		 (- (upper-bound x) (upper-bound y))))
+
+(sub-interval one->three one->three)
+
+;; Exercise 2.9
+(define (width-interval x)
+  (/ (- (upper-bound x) (lower-bound x))
+     2))
+
+(define one->four (make-interval 1. 4))
+(width-interval one->four)
+
+(= (width-interval (add-interval one->four one->three))
+   (+ (width-interval one->four)
+      (width-interval one->three)))
+
+(= (width-interval (sub-interval one->four one->three))
+   (- (width-interval one->four)
+      (width-interval one->three)))
+
+(= (width-interval (mul-interval one->four one->three))
+   (* (width-interval one->four)
+      (width-interval one->three)))
+
+;; Exercise 2.10
+(define (div-interval x y)
+  (if (= 0 (- (upper-bound y)
+	      (lower-bound y)))
+      (error "span of divisor must not be zero")
+      (mul-interval x 
+		    (make-interval (/ 1.0 (upper-bound y))
+				   (/ 1.0 (lower-bound y))))))
+
+
+;; Exercise 2.11
+(define (mul-interval-2 x y)
+  (define (enc n)
+    (if (positive? n) "p" "n"))
+  (let ((xl (lower-bound x))
+	(xu (upper-bound x))
+	(yl (lower-bound y))
+	(yu (upper-bound y)))
+    (let ((word (string-append (enc xl) (enc xu)
+			       (enc yl) (enc yu))))
+      (cond
+       ((string=? word "pppp") (make-interval (* xl yl) (* xu yu)))
+       ((string=? word "nppp") (make-interval (* xl yu) (* xu yu)))
+       ((string=? word "nnpp") (make-interval (* xl yu) (* xu yl)))
+
+       ((string=? word "ppnp") (make-interval (* xu yl) (* xu yu)))
+       ((string=? word "npnp") (make-interval (min (* xl yu) (* xu yl))
+					      (max (* xl yl) (* xu yu))))
+       ((string=? word "nnnp") (make-interval (* xl yu) (* xu yl)))
+
+       ((string=? word "ppnn") (make-interval (* xu yl) (* xl yu)))
+       ((string=? word "npnn") (make-interval (* xu yl) (* xl yl)))
+       ((string=? word "nnnn") (make-interval (* xu yu) (* xl yl)))))))
+
+(mul-interval-2
+ (make-interval 2 5)
+ (make-interval 4 6))
+
+;; TODO: tests.
