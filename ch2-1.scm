@@ -265,3 +265,37 @@
  (make-interval 4 6))
 
 ;; TODO: tests.
+
+;; Exercise 2.12
+(define (make-center-width c w)
+  (make-interval (- c w) (+ c w)))
+
+(define (center i)
+  (/ (+ (lower-bound i) (upper-bound i)) 2))
+
+(define (width i)
+  (/ (- (upper-bound i) (lower-bound i)) 2))
+
+(define (make-center-percent c p)
+  (make-interval (- c (* c p))
+		 (+ c (* c p))))
+
+(define (percent i)
+  (- 1 (/ (lower-bound i)
+	  (center i))))
+
+(percent 
+ (make-center-percent 3.5 0.05))
+
+;; Exercise 2.13
+
+(define interval-2.13-1 (make-center-percent 3.5 0.05))
+(define interval-2.13-2 (make-center-percent 5 0.02))
+
+(percent
+ (mul-interval interval-2.13-1 interval-2.13-2))
+
+(define (mul-percent x y)
+  (+ (percent x) (percent y)))
+
+(mul-percent interval-2.13-1 interval-2.13-2)
