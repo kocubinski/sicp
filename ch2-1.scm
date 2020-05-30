@@ -299,3 +299,50 @@
   (+ (percent x) (percent y)))
 
 (mul-percent interval-2.13-1 interval-2.13-2)
+
+;; Exercise 2.14
+
+(define (par1 r1 r2)
+  (div-interval (mul-interval r1 r2)
+                (add-interval r1 r2)))
+
+(define (par2 r1 r2)
+  (let ((one (make-interval 1 1))) 
+    (div-interval one
+                  (add-interval (div-interval one r1)
+                                (div-interval one r2)))))
+
+(define interval-a (make-center-percent 3.5 0.05))
+(define interval-b (make-center-percent 5 0.02))
+
+(par1 interval-a interval-b)
+;Value: (1.856695156695157 . 2.2787234042553184)
+
+(par2 interval-a interval-b)
+;Value: (1.9808510638297874 . 2.135897435897436)
+
+(percent (par1 interval-a interval-b))
+;Value: .10205212394828611
+(percent (par2 interval-a interval-b))
+;Value: .03766233766233762
+
+interval-a
+;Value: (3.325 . 3.675)
+(div-interval interval-a interval-a)
+;Value: (.9047619047619049 . 1.1052631578947367)
+
+interval-b
+;Value: (4.9 . 5.1)
+(div-interval interval-b interval-b)
+;Value: (.9607843137254903 . 1.040816326530612)
+
+;; these should be (1 . 1), but instead off by (* 2 percent) in either direction
+
+;; Exercise 2.15
+;; the error gap does appear to increase with further combinations
+
+;; Exercise 2.16
+
+
+
+;; space intentionally left blank.
