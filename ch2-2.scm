@@ -2,6 +2,10 @@
   (display args)
   (newline))
 
+(define (print x)
+  (display x)
+  (newline))
+
 (define nil '())
 
 ;; Exercise 2.17
@@ -107,4 +111,68 @@
 ;; Exercise 2.24
 (list 1 (list 2 (list 3 4)))
 ;Value: (1 (2 (3 4)))
+
+;; Exercise 2.25
+(car (cdaddr '(1 3 (5 7) 9)))
+
+(car '(7))
+
+(cadadr
+ (cadadr
+  (cadadr '(1 (2 (3 (4 (5 (6 7)))))))))
+
+;; Exercise 2.26
+(define x (list 1 2 3))
+(define y (list 4 5 6))
+
+(append x y)
+;; (1 2 3 4 5 6)
+
+(cons x y)
+;; ((1 2 3) 4 5 6)
+
+(list x y)
+;; ((1 2 3) (4 5 6))
+
+;; Exercise 2.27
+
+(define reverse-me (list (list 1 2) (list 3 4)))
+
+(define (deep-reverse xs)
+  (reverse (map reverse xs)))
+
+(deep-reverse reverse-me)
+
+;;Exercise 2.28
+(define x (list (list 1 2) (list 3 4)))
+
+(define (filter-nil x)
+  (print x)
+  (cond
+   ((null? x) x)
+;; this is also sensible and more clear me
+;; ((not (pair? x)) x)
+   ((null? (car x)) (filter-nil (cdr x)))
+   (else (cons (car x) (filter-nil (cdr x))))))
+
+(define (ugly-fringe x)
+  (define (flatten x)
+    (if (not (pair? x))
+	(list x)
+	(append (flatten (car x))
+		(flatten (cdr x)))))
+  (filter-nil (flatten x)))
+
+(filter-nil (list 1 2 3 '() 4 5 '()))
+
+(define (fringe x)
+  (print x)
+  (cond ((null? x) nil)
+	((not (pair? x)) (list x))
+	(else (append (fringe (car x))
+		      (fringe (cdr x))))))
+
+(fringe x)
+
+(fringe (list x x))
 
