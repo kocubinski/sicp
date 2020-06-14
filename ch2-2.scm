@@ -176,3 +176,28 @@
 
 (fringe (list x x))
 
+;; Exercise 2.29
+
+(define (make-mobile left right)
+  (list left right))
+
+(define (make-branch length structure)
+  (list length structure))
+
+(define left-branch car)
+
+(define right-branch cdr)
+
+(define branch-length car)
+
+(define branch-structure cdr)
+
+(define (total-weight mobile)
+  0)
+
+(make-mobile
+ (make-branch 10
+	      (make-mobile
+	       (make-branch 5 11)
+	       (make-branch 4 13)))
+ (make-branch 7 20))
