@@ -186,13 +186,13 @@
 
 (define left-branch car)
 
-(define right-branch cdr)
+(define right-branch cadr)
 
 (define branch-length car)
 
-(define branch-structure cdr)
+(define branch-structure cadr)
 
-(define (total-weight x)
+(define (total-weight-1 x)
   (print x)
   (cond ((null? x) 0)
 	((number? (car x))
@@ -201,6 +201,15 @@
 	     (+ (total-weight (cdr x)))))
 	(else (+ (total-weight (car x))
 		 (total-weight (cdr x))))))
+
+(define (total-weight x)
+  (print x)
+  (cond ((list? (car x))
+	 (+ (total-weight (left-branch x))
+	    (total-weight (right-branch x))))
+	(+ (total-weight (car x)))
+	((list? ()))
+	))
 
 (define mobile-a
   (make-mobile
