@@ -291,9 +291,23 @@
 	     (* x x)))
        tree))
 
+(define (square-tree-2 x)
+  (cond ((null? x) nil)
+        ((not (pair? x)) (* x x))
+        (else (cons (square-tree-2 (car x))
+                    (square-tree-2 (cdr x))))))
+
 (square-tree
  (list 1
        (list 2 (list 3 4) 5)
        (list 6 7)))
 ;; (1 (4 (9 16) 25) (36 49))
+
+(square-tree-2
+ (list 1
+       (list 2 (list 3 4) 5)
+       (list 6 7)))
+
+;; Exercise 2.31
+
 
