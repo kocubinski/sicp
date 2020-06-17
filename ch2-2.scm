@@ -242,3 +242,42 @@
 
 (balanced? mobile-a)
 (balanced? (make-mobile mobile-a mobile-a))
+
+;; part (d)
+
+(define (make-mobile left right)
+  (cons left right))
+
+(define (make-branch length structure)
+  (cons length structure))
+
+(define left-branch car)
+
+(define right-branch cdr)
+
+(define branch-length car)
+
+(define branch-structure cdr)
+
+(define (total-weight x)
+  (cond ((pair? (car x))
+	 (+ (total-weight (left-branch x))
+	    (total-weight (right-branch x))))
+	((pair? (branch-structure x))
+	 (total-weight (branch-structure x)))
+	(else
+	 (branch-structure x))))
+
+(define mobile-a
+  (make-mobile
+   (make-branch 10
+		(make-mobile
+		 (make-branch 5 11)
+		 (make-branch 4 13)))
+   (make-branch 7 20)))
+
+(= (total-weight mobile-a)
+   (+ 11 13 20))
+
+;; modified selectors from cadr -> cdr
+;; modified predicate from list? -> pair?
