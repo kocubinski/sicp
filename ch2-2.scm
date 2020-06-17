@@ -235,3 +235,10 @@
    (+ (* 10 (+ (* 5 11)
 	       (* 4 13)))
       (* 7 20)))
+
+(define (balanced? mobile)
+  (= (torque (left-branch mobile))
+     (torque (right-branch mobile))))
+
+(balanced? mobile-a)
+(balanced? (make-mobile mobile-a mobile-a))
