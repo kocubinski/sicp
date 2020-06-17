@@ -297,17 +297,30 @@
         (else (cons (square-tree-2 (car x))
                     (square-tree-2 (cdr x))))))
 
-(square-tree
- (list 1
-       (list 2 (list 3 4) 5)
-       (list 6 7)))
+(define square-tree-input
+  (list 1
+	(list 2 (list 3 4) 5)
+	(list 6 7)))
+
+(square-tree square-tree-input)
 ;; (1 (4 (9 16) 25) (36 49))
 
-(square-tree-2
- (list 1
-       (list 2 (list 3 4) 5)
-       (list 6 7)))
+(square-tree-2 square-tree-input)
+;; (1 (4 (9 16) 25) (36 49))
 
 ;; Exercise 2.31
+
+(define (tree-map f tree)
+  (map (lambda (x)
+	 (if (pair? x)
+	     (tree-map f x)
+	     (f x)))
+       tree))
+
+(define (square-tree tree) (tree-map square tree))
+(square-tree square-tree-input)
+;Value: (1 (4 (9 16) 25) (36 49))
+
+;; Exercise 2.32
 
 
