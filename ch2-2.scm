@@ -221,3 +221,17 @@
 (= (total-weight-1 mobile-a)
    (total-weight mobile-a)
    (+ 11 13 20))
+
+(define (torque x)
+  (cond ((list? (car x))
+	 (+ (torque (left-branch x))
+	    (torque (right-branch x))))
+	((list? (branch-structure x))
+	 (* (branch-length x) (torque (branch-structure x))))
+	(else
+	 (* (branch-length x) (branch-structure x)))))
+
+(= (torque mobile-a)
+   (+ (* 10 (+ (* 5 11)
+	       (* 4 13)))
+      (* 7 20)))
