@@ -8,6 +8,8 @@
 
 (define nil '())
 
+(define (identity x) x)
+
 ;; Exercise 2.17
 (define (last-pair x)
   (if (null? (cdr x))
@@ -322,5 +324,15 @@
 ;Value: (1 (4 (9 16) 25) (36 49))
 
 ;; Exercise 2.32
+
+(define (subsets s)
+  (if (null? s)
+      (list nil)
+      (let ((rest (subsets (cdr s))))
+	(print rest)
+        (append rest (map (lambda (x) (cons (car s) x)) rest)))))
+
+(subsets (list 1 2 3))
+
 
 
