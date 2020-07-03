@@ -365,26 +365,18 @@
 
 (define (horner-eval x coefficient-sequence)
   (accumulate (lambda (this-coeff higher-terms)
-		(println this-coeff higher-terms)
-		(if (= higher-terms 0)
-		    this-coeff
-		    ))
+		(+ this-coeff (* x higher-terms)))
               0
               coefficient-sequence))
 
-(horner-eval 2 (list 1 3 0 5 0 1))
-
 ;; For example, to compute 1 + 3x + 5x^3 + x^5 at x = 2 you would evaluate
+;; (horner-eval 2 (list 1 3 0 5 0 1))
 
-(let ((x 2))
-  (+ 1
-     (* 3 x)
-     (* 5 (expt x 3))
-     (* 1 (expt x 5))))
-;;Value: 79
+(= 79
+   (let ((x 2))
+     (+ 1
+	(* 3 x)
+	(* 5 (expt x 3))
+	(* 1 (expt x 5))))
+   (horner-eval 2 (list 1 3 0 5 0 1)))
 
-(let ((x 2))
-  (* (+ (* 1 x)
-	(* 0 x))
-     x)
-  )
