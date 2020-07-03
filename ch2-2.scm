@@ -380,3 +380,27 @@
 	(* 1 (expt x 5))))
    (horner-eval 2 (list 1 3 0 5 0 1)))
 
+;; Exercise 2.35
+
+(define (count-leaves* x)
+  (cond ((null? x) 0)  
+        ((not (pair? x)) 1)
+        (else (+ (count-leaves* (car x))
+                 (count-leaves* (cdr x))))))
+
+(define (count-leaves t)
+  (accumulate (lambda (x acc)
+		(+ acc
+		   (if (pair? x)
+		       (count-leaves x)
+		       x)))
+	      0
+	      (map (lambda (x)
+		     (if (pair? x)
+			 x
+			 1))
+		   t)))
+
+(= 
+ (count-leaves* square-tree-input)
+ (count-leaves square-tree-input))
