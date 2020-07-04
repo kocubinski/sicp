@@ -344,9 +344,6 @@
 
 (accumulate + 0 (list 4 4 4))
 
-(define (map p sequence)
-  (accumulate (lambda (x y) (cons (p x) y)) nil sequence))
-
 (map (lambda (n) (* 2 n)) (list 1 2 3 4 5))
 ;;Value: (2 4 6 8 10)
 
@@ -414,4 +411,54 @@
             (accumulate-n op init (map cdr seqs)))))
 
 (accumulate-n + 0 '((1 2 3) (4 5 6) (7 8 9) (10 11 12)))
+
+;; Exercise 2.37
+
+(define matrix-a
+  '((1 2 3 4)
+    (4 5 6 6)
+    (6 7 8 9)))
+
+(define vector-a '(2 2 2 2))
+
+(define (dot-product v w)
+  (accumulate + 0 (map * v w)))
+
+(dot-product vector-a vector-a)
+
+(define (matrix-*-vector m v)
+  (map (lambda (r)
+	 (accumulate + 0 (map * r v)))
+       m))
+
+(matrix-*-vector matrix-a vector-a)
+
+(define (transpose mat)
+  (accumulate-n cons nil mat))
+
+(transpose matrix-a)
+'((1 4 6)
+  (2 5 7)
+  (3 6 8)
+  (4 6 9))
+
+(define matrix-b
+  '(( 0  4 -2)
+    (-4 -3  0)))
+
+(define matrix-c
+  '((0  1)
+    (1 -1)
+    (2  3)))
+
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+    (map (lambda (row)
+	   (map (lambda (col)
+		  (accumulate + 0
+			      (map * row col)))
+		cols))
+	 m)))
+
+(matrix-*-matrix matrix-b matrix-c)
 
