@@ -462,3 +462,46 @@
 
 (matrix-*-matrix matrix-b matrix-c)
 
+;; Exercise 2.38
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
+
+(define (fold-right op initial sequence)
+  (if (null? sequence)
+      initial
+      (op (car sequence)
+          (accumulate op initial (cdr sequence)))))
+
+(fold-right / 1 (list 1 2 3))
+(/ 
+ (/ (/ 3 1)
+    2)
+ 1)
+;; 3/2
+(fold-left / 1 (list 1 2 3))
+(/ 
+ (/ 1 2)
+ 3)
+;; 1/6
+(fold-right list nil (list 1 2 3))
+;; (1 (2 (3 ())))
+(fold-left list nil (list 1 2 3))
+;; (((() 1) 2) 3)
+;; op must satisfy the associative property
+
+;; Exercise 2.39
+(define reverse-test (list 1 2 3 4 5))
+
+(define (reverse sequence)
+  (fold-right (lambda (x y) (append y (list x))) nil sequence))
+(reverse reverse-test)
+
+(define (reverse sequence)
+  (fold-left (lambda (x y) (append (list y) x)) nil sequence))
+(reverse reverse-test)
+
